@@ -1,0 +1,13 @@
+1. Add these pages to Menubar
+    1.1 Befote login
+        1.1.1 Home
+        1.1.2 About us
+    1.2 After Login
+        Home 
+        Dashboard
+        Profile
+        About us 
+
+        Logout (seperated section,Diffrent color)    
+
+2.Make the  Dashboard to a Fullsize window as perthe in Dashboard.jpg and Dashboard2.jpg

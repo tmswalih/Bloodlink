@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 
-function HospitalDashboard() {
+function HospitalDashboard({ toggleSidebar }) {
   const [requests, setRequests] = useState([]);
   const [formData, setFormData] = useState({ patient_name: '', blood_group_required: 'A+', units_required: 1 });
   const [error, setError] = useState('');
@@ -44,17 +44,25 @@ function HospitalDashboard() {
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate('/login');
+    navigate('/');
+    window.location.reload();
   };
 
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '2rem' }}>
       <div className="header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--glass-bg)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid var(--glass-border)', borderRadius: '20px', padding: '1.5rem 2rem', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <span style={{ fontSize: '2.5rem' }}>🏥</span>
-          <div>
-            <h1 style={{ fontSize: '1.8rem', margin: '0 0 0.25rem 0' }}>{user?.name}</h1>
-            <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Blood Bank & Request Management</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+          <button className="menu-btn" onClick={toggleSidebar}>
+            <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+              <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+            </svg>
+          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <span style={{ fontSize: '2.5rem' }}>🏥</span>
+            <div>
+              <h1 style={{ fontSize: '1.8rem', margin: '0 0 0.25rem 0' }}>{user?.name}</h1>
+              <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Blood Bank & Request Management</p>
+            </div>
           </div>
         </div>
         <button onClick={handleLogout} className="btn" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', padding: '0.75rem 1.5rem', boxShadow: 'none' }}>Logout</button>

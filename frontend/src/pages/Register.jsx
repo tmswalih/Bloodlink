@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api';
 
-function Register() {
+function Register({ toggleSidebar }) {
   const [type, setType] = useState('donor');
   const [formData, setFormData] = useState({
     name: '', email: '', password: '', blood_group: 'A+', address: ''
@@ -29,9 +29,19 @@ function Register() {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', padding: '2rem 1rem' }}>
-      <div className="card" style={{ width: '100%', maxWidth: '480px', margin: '0' }}>
-        <div className="header" style={{ marginBottom: '1.5rem', padding: '0', borderBottom: 'none', justifyContent: 'center' }}>
+    <div style={{ position: 'relative', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2rem 1rem' }}>
+      <button className="menu-btn" onClick={toggleSidebar} style={{ position: 'absolute', top: '2rem', left: '2rem' }}>
+        <svg viewBox="0 0 24 24" fill="currentColor" width="30" height="30">
+          <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+        </svg>
+      </button>
+
+      <div className="card" style={{ width: '100%', maxWidth: '480px', margin: '0', position: 'relative' }}>
+        <Link to="/" style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', border: 'none' }}>
+          ← Back
+        </Link>
+
+        <div className="header" style={{ marginBottom: '1.5rem', padding: '2.5rem 0 0.5rem 0', borderBottom: 'none', justifyContent: 'center' }}>
           <h1 style={{ fontSize: '2.2rem' }}>Create Account</h1>
         </div>
         
