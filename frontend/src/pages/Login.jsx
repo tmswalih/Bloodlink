@@ -18,7 +18,8 @@ function Login({ toggleSidebar }) {
       const endpoint = type === 'donor' ? '/auth/donor/login' : '/auth/hospital/login';
       const res = await api.post(endpoint, { email, password });
       localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify({ name: res.data.name, id: res.data.id, type }));
+      
+      localStorage.setItem('user', JSON.stringify({ ...res.data, type }));
       
       if (type === 'donor') navigate('/donor-dashboard');
       else navigate('/hospital-dashboard');

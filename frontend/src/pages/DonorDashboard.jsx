@@ -12,8 +12,8 @@ function DonorDashboard({ toggleSidebar }) {
 
   useEffect(() => {
     if (!user || user.type !== 'donor') {
-        navigate('/login');
-        return;
+      navigate('/login');
+      return;
     }
     fetchRequests();
   }, [navigate, user]);
@@ -48,8 +48,54 @@ function DonorDashboard({ toggleSidebar }) {
     window.location.reload();
   };
 
+  const pendingRequests = requests.filter(req => {
+    const primaryCount = req.acceptances?.filter(a => a.status === 'primary').length || 0;
+    return primaryCount < req.units_required;
+  });
+
+  const completedRequests = requests.filter(req => {
+    const primaryCount = req.acceptances?.filter(a => a.status === 'primary').length || 0;
+    const waitingCount = req.acceptances?.filter(a => a.status === 'waitinglist').length || 0;
+    
+    if (primaryCount < req.units_required) return false;
+    if (waitingCount > 2) return false;
+    
+    return true;
+  });
+
+  const renderRequestRow = (req, isFulfilled) => {
+    const primaryCount = req.acceptances?.filter(a => a.status === 'primary').length || 0;
+    const hasPledged = req.acceptances?.some(a => a.donor_id === user.id);
+    
+    return (
+      <tr key={req.id}>
+        <td>
+          <strong style={{ fontSize: '1.05rem' }}>{req.hospital_name}</strong><br />
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{req.hospital_address}</span>
+        </td>
+        <td>{req.patient_name}</td>
+        <td>
+          <span className="badge badge-warning">{req.units_required} Units</span><br />
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{primaryCount} Filled</span>
+        </td>
+        <td style={{ color: 'var(--text-secondary)' }}>{new Date(req.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+        <td>
+          {isFulfilled ? (
+            <span className="badge badge-success" style={{ padding: '0.6rem 1.2rem' }}>Fully Pledged</span>
+          ) : hasPledged ? (
+            <span className="badge badge-success" style={{ padding: '0.6rem 1.2rem', background: 'rgba(18, 184, 134, 0.2)', color: '#69DB7C' }}>You Pledged</span>
+          ) : (
+            <button className="btn" onClick={() => handleAccept(req.id)} disabled={isLoading} style={{ padding: '0.6rem 1.2rem', fontSize: '0.9rem' }}>
+              {isLoading ? 'Accepting...' : 'Accept Request'}
+            </button>
+          )}
+        </td>
+      </tr>
+    );
+  };
+
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
+    <div style={{ width: '100%', boxSizing: 'border-box', margin: '0', padding: '2rem' }}>
       <div className="header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--glass-bg)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid var(--glass-border)', borderRadius: '20px', padding: '1.5rem 2rem', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
           <button className="menu-btn" onClick={toggleSidebar}>
@@ -76,39 +122,56 @@ function DonorDashboard({ toggleSidebar }) {
         {error && <div style={{ background: 'rgba(255, 107, 107, 0.2)', color: '#FF6B6B', padding: '1rem', borderRadius: '12px', margin: '1rem 0', fontWeight: '500' }}>{error}</div>}
         {message && <div style={{ background: 'rgba(18, 184, 134, 0.2)', color: '#69DB7C', padding: '1rem', borderRadius: '12px', margin: '1rem 0', fontWeight: '500' }}>{message}</div>}
 
-        <div style={{ overflowX: 'auto' }}>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Hospital</th>
-                <th>Patient</th>
-                <th>Units Needed</th>
-                <th>Date Posted</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {requests.map(req => (
-                <tr key={req.id}>
-                  <td>
-                     <strong style={{ fontSize: '1.05rem' }}>{req.hospital_name}</strong><br/>
-                     <span style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>{req.hospital_address}</span>
-                  </td>
-                  <td>{req.patient_name}</td>
-                  <td><span className="badge badge-warning">{req.units_required} Units</span></td>
-                  <td style={{ color: 'var(--text-secondary)' }}>{new Date(req.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</td>
-                  <td>
-                    <button className="btn" onClick={() => handleAccept(req.id)} disabled={isLoading} style={{ padding: '0.6rem 1.2rem', fontSize: '0.9rem' }}>
-                      {isLoading ? 'Accepting...' : 'Accept Request'}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {requests.length === 0 && (
-                <tr><td colSpan="5" style={{textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)'}}>No pending urgent requests for {user?.blood_group} right now. You're a hero in waiting!</td></tr>
-              )}
-            </tbody>
-          </table>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem', marginTop: '2rem' }}>
+          <div>
+            <h2 style={{ fontSize: '1.5rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+              <span style={{ color: '#FFB86C' }}>⏳</span> Pending Requests
+            </h2>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Hospital</th>
+                    <th>Patient</th>
+                    <th>Units Needed</th>
+                    <th>Date Posted</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pendingRequests.map(req => renderRequestRow(req, false))}
+                  {pendingRequests.length === 0 && (
+                    <tr><td colSpan="5" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>No pending urgent requests for {user?.blood_group} right now. You're a hero in waiting!</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <h2 style={{ fontSize: '1.5rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+              <span style={{ color: '#92FE9D' }}>✔️</span> Completed / Pledged Requests
+            </h2>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Hospital</th>
+                    <th>Patient</th>
+                    <th>Units Status</th>
+                    <th>Date Posted</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {completedRequests.map(req => renderRequestRow(req, true))}
+                  {completedRequests.length === 0 && (
+                    <tr><td colSpan="5" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>No completed requests.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>

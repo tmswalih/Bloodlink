@@ -28,7 +28,7 @@ router.post('/donor/login', async (req, res) => {
     if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
     
     const token = jwt.sign({ id: donors[0].id, type: 'donor' }, process.env.JWT_SECRET, { expiresIn: '1d' });
-    res.json({ token, id: donors[0].id, name: donors[0].name, blood_group: donors[0].blood_group });
+    res.json({ token, id: donors[0].id, name: donors[0].name, email: donors[0].email, blood_group: donors[0].blood_group });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -58,7 +58,7 @@ router.post('/hospital/login', async (req, res) => {
     if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
     
     const token = jwt.sign({ id: hospitals[0].id, type: 'hospital' }, process.env.JWT_SECRET, { expiresIn: '1d' });
-    res.json({ token, id: hospitals[0].id, name: hospitals[0].name });
+    res.json({ token, id: hospitals[0].id, name: hospitals[0].name, email: hospitals[0].email, address: hospitals[0].address });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -33,12 +33,12 @@ function Home({ toggleSidebar }) {
               </svg>
             </div>
           </div>
-          
+
           <h2 className="display-headline">
             Connecting Donors with <br />
             Hospitals to <span className="text-highlight">Save Lives</span>
           </h2>
-          
+
           <p className="hero-description">
             Join our community of lifesavers. Register as a donor or hospital to <br />
             make blood donation simple, efficient, and impactful.

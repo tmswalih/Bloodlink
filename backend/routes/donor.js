@@ -12,15 +12,23 @@ router.get('/requests', authMiddleware(['donor']), async (req, res) => {
     if (donors.length === 0) return res.status(404).json({ error: 'Donor not found' });
     const bg = donors[0].blood_group;
 
-    // Fetch pending requests matching blood group
+    // Fetch requests matching blood group
     const [requests] = await db.query(
       `SELECT pr.*, h.name as hospital_name, h.address as hospital_address 
        FROM Patient_Request pr 
        JOIN Hospital h ON pr.hospital_id = h.id 
-       WHERE pr.blood_group_required = ? AND pr.status = 'pending' 
+       WHERE pr.blood_group_required = ? 
        ORDER BY pr.created_at DESC`,
       [bg]
     );
+
+    for (let reqData of requests) {
+      const [accepts] = await db.query(
+        `SELECT id, donor_id, status FROM Donation_Acceptance WHERE request_id = ?`,
+        [reqData.id]
+      );
+      reqData.acceptances = accepts;
+    }
 
     res.json(requests);
   } catch (error) {

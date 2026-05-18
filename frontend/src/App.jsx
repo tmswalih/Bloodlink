@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import HospitalDashboard from './pages/HospitalDashboard';
 import DonorDashboard from './pages/DonorDashboard';
+import Profile from './pages/Profile';
 import './App.css';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
             <Route path="/register" element={<Register toggleSidebar={toggleSidebar} />} />
             <Route path="/hospital-dashboard" element={<HospitalDashboard toggleSidebar={toggleSidebar} />} />
             <Route path="/donor-dashboard" element={<DonorDashboard toggleSidebar={toggleSidebar} />} />
+            <Route path="/profile" element={<Profile toggleSidebar={toggleSidebar} />} />
           </Routes>
         )}
       </Layout>
