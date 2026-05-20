@@ -101,7 +101,20 @@ More doner verification technique
 AI-based donor recommendations
 
 📷 Screenshots
-Add your project screenshots here (Home, Login, Dashboard, etc.)
+### Home Page
+![Home Page](screenshots/Home.jpg)
+
+### Login Page
+![Login Page](screenshots/login.jpg)
+
+### About Us
+![About_us Page](screenshots/About.jpg)
+
+### Donor Dashboard
+![Donor Page](screenshots/Donor.jpg)
+
+### Hospital Dashboard
+![Hospital Page](screenshots/Hospital.jpg)
 
 📌 Installation (Basic)
 git clone <your-repo-link>
